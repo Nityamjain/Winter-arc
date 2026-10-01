@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1a2b">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Winter Arc</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <main id="main" tabindex="-1"></main>
+  <nav id="nav" aria-label="Main">
+    <button data-act="nav" data-v="home">Home</button>
+    <button data-act="nav" data-v="history">History</button>
+    <button data-act="nav" data-v="stats">Stats</button>
+    <button data-act="nav" data-v="settings">Settings</button>
+  </nav>
+  <button id="fab" class="fab" data-act="addHabit" aria-label="Add habit">+</button>
+</div>
+<div id="sheetWrap" hidden>
+  <div class="backdrop" data-act="closeSheet"></div>
+  <div id="sheet" class="sheet" role="dialog" aria-modal="true"></div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file" accept="application/json,.json" hidden>
+<script src="core.js"></script>
+<script src="data/quotes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

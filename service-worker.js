@@ -1,5 +1,5 @@
 // Bump CACHE on every release so old files are deleted on activate.
-const CACHE = 'winter-arc-v1';
+const CACHE = 'winter-arc-v2';
 const FILES = ['./', 'index.html', 'style.css', 'core.js', 'app.js', 'data/quotes.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

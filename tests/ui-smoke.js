@@ -10,7 +10,7 @@ ok($('#ae').value==='2026-12-26','end auto = start+89');
 $('#ae').value='2026-09-01';$('#arcForm').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
 ok($('#arcErr').textContent.includes('after'),'invalid dates rejected');
 $('#ae').value='2026-12-26';$('#arcForm').dispatchEvent(new w.Event('submit',{cancelable:true,bubbles:true}));
-ok($('#main').textContent.includes('/ 90'),'home after setup');
+ok($('#main').textContent.includes('/90'),'home after setup');
 const card=()=>$('.card');card().click();
 ok(card().classList.contains('done')&&$('.ringTxt b').textContent==='25%','toggle -> 25%');
 const saved=JSON.parse(w.localStorage.getItem('winterArc.v1'));

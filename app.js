@@ -23,7 +23,7 @@ function editable(d) { return inArc(d) && d <= today(); }
 function applyTheme() {
   var t = D.settings.theme, dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-  var m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#0f1a2b' : '#eef4f9';
+  var m = document.querySelector('meta[name=theme-color]'); if (m) m.content = dark ? '#111111' : '#ffd60a';
 }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
@@ -52,19 +52,29 @@ function habitCard(h, date, ok) {
   return '<button class="card' + (done ? ' done' : '') + '" data-act="toggle" data-d="' + date + '" data-id="' + h.id + '" aria-pressed="' + done + '"' + (ok ? '' : ' disabled') + '>' +
     '<span class="tick" aria-hidden="true">' + (done ? '✓' : h.target > 1 ? n : '') + '</span><span><span class="nm">' + esc(h.name) + '</span><span class="mut">' + esc(h.category) + (h.target > 1 ? ' · ' + n + '/' + h.target : '') + '</span></span><span class="mut" style="margin-left:auto">' + (done ? 'Done' : 'To do') + '</span></button>';
 }
+function weekStrip(t) {
+  var mon = C.addDays(t, -((C.parseDate(t).getDay() + 6) % 7)), nm = ['M', 'T', 'W', 'T', 'F', 'S', 'S'], g = { perfect: '★', success: '✓', partial: '◐', missed: '✕', future: '·', none: '–' }, out = '';
+  for (var i = 0; i < 7; i++) {
+    var ds = C.addDays(mon, i), live = inArc(ds), st = live ? C.dayStatus(D, ds, t) : 'future';
+    if (ds === t && st === 'missed') st = 'future';
+    out += '<button class="wd ' + st + (ds === t ? ' today' : '') + '"' + (live ? ' data-act="day" data-d="' + ds + '"' : ' disabled') + ' aria-label="' + fmtLong(ds) + ', ' + st + '"><span>' + nm[i] + '</span><b>' + ds.slice(8) + '</b><i>' + g[st] + '</i></button>';
+  }
+  return '<div class="week">' + out + '</div>';
+}
 function homeHtml() {
   var a = D.winterArc, t = today(), total = C.arcTotal(a), day = C.calculateArcDay(a, t), left = C.calculateDaysRemaining(a, t);
   var date = t < a.startDate ? a.startDate : t > a.endDate ? a.endDate : t, s = C.dayStats(D, date), st = C.calculateStreak(D, t);
   var q = QUOTES[(C.daysBetween(a.startDate, t) % QUOTES.length + QUOTES.length) % QUOTES.length];
   var note = t < a.startDate ? 'Starts in ' + C.daysBetween(t, a.startDate) + ' days' : t > a.endDate ? 'Arc complete' : left + ' days left';
   var hs = C.habitsFor(D, date);
-  return '<div class="top"><div><p class="mut" style="margin:0 0 6px;font-weight:700">' + esc(a.name) + '</p><h1>Day ' + day + ' / ' + total + '</h1><p class="mut" style="margin:6px 0 0">' + note + '</p></div><div class="chip" aria-label="Current streak ' + st.current + ' days">🔥 ' + st.current + '</div></div>' +
-    '<div class="ringWrap" role="img" aria-label="Today ' + s.pct + ' percent">' + ring(s.pct) + '<div class="ringTxt"><b>' + s.pct + '%</b><span class="mut">Today</span></div></div>' +
-    '<p class="center" style="margin:0"><b>' + s.done + ' / ' + s.total + ' habits completed</b><br><span class="mut">' + C.scoreLabel(s.pct) + ' · best streak ' + st.best + '</span></p>' +
+  return '<div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i></span>WINTER_ARC<span class="chip">' + esc(a.name) + '</span></div>' +
+    '<h1>Day ' + day + '<small>/' + total + '</small></h1><p class="sub">' + note + '</p>' + weekStrip(t) +
+    '<div class="hero"><div class="ringWrap" role="img" aria-label="Today ' + s.pct + ' percent">' + ring(s.pct) + '<div class="ringTxt"><b>' + s.pct + '%</b><span>TODAY</span></div></div>' +
+    '<div class="heroTxt"><b>' + s.done + ' / ' + s.total + '</b><span>habits completed</span><em>' + C.scoreLabel(s.pct) + '</em></div></div>' +
+    '<div class="trio"><div><b>🔥' + st.current + '</b>Streak</div><div><b>' + st.best + '</b>Best</div><div><b>' + st.overall + '%</b>Overall</div></div>' +
     '<p class="quote">' + esc(q) + '</p><h2>Today\'s habits</h2>' +
     (hs.length ? hs.map(function (h) { return habitCard(h, date, editable(date)); }).join('') : '<p class="mut">No active habits yet. Tap + to add one.</p>');
 }
-
 function historyHtml() {
   var a = D.winterArc, t = today();
   if (!calMonth) calMonth = (t < a.startDate ? a.startDate : t > a.endDate ? a.endDate : t).slice(0, 7);
